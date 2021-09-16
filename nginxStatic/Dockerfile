@@ -1,6 +1,5 @@
 FROM nginx:latest
-COPY ./index.html /usr/share/nginx/html/index.html
-COPY ./src/ /usr/share/nginx/html/src/
+COPY ./ /usr/share/nginx/html/
 
 # nginx es un servidor que en su forma mas basica responde peticiones http con el contenido de la carpeta /usr/share/nginx/html/
 # aca creamos nuestro servidor pasandole index.html dentro de ese directrio
