@@ -1,0 +1,27 @@
+apiVersion: v1 #version de la api depende del tipo de recurso
+kind: Pod #este es el tipo
+metadata:
+  name: nginx #este es el tag que le asigno al pod
+spec:
+  containers:
+    - name: nginx
+      image: nginx:alpine
+# Recordatorio los pods son sets de contenedores que compartennamespace de
+# red ---> comparten la misma red
+# Este pod se va a llamar nginx y va a tener uns solo contenedor llamado nginx
+# que corre un nginx alpine
+#
+# Para correr este pod se usa el comando
+#
+# kubectl apply -f 01-pod.yaml
+#
+# con el comando
+#
+#kubectl get pods
+#
+#podemos ver el pod creado, para ejecutar comandos dentro
+#kubectl exec -it <NOMBRE del POD> -- <COMANDO>
+#
+#Lo podemos borrar con el comando
+#
+#kubectl delete pod <Nombre del POD>

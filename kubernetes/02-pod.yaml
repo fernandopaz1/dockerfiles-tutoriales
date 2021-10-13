@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+    env:  # le pasamos variables de entorno para configurar el container
+    - name: MI_VARIABLE
+      value: "pelado"
+    - name: MI_OTRA_VARIABLE
+      value: "pelade"
+    - name: DD_AGENT_HOST #esta es una env que viene de otro lado
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP # esta ip la sacamos de kubernets
+    resources: # aca le asigno los recursos / es por contenedor
+      requests:
+        memory: "64Mi" #64 megas de ram
+        cpu: "200m"  # 200 milicores
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    readinessProbe:  # forma de decirle a kubernets que el pod esta listo
+      httpGet:
+        path: / # le pega al path / y espera un status 200
+        port: 80  
+      initialDelaySeconds: 5  # delay necesario para probar
+      periodSeconds: 10  
+    livenessProbe: # forma de decirle a kubernets que el pod esta vivo
+      tcpSocket:
+        port: 80 
+      initialDelaySeconds: 15
+      periodSeconds: 20
+    ports:
+    - containerPort: 80
+
+# recursos
+# request son los recursos que le garantizamos al container que siempre va tener dispobibles
+# milicore: unidad de uso de cpu 1000m == 1 core
+# entonces si tengo una cpu con 4 cores lo maximo que puedo asignar es un 4000m
+
+# limits: es el limite de memoria y cpu que defino que el pod puede llegar a usar
+# si se pasa de estos recursos el kernel de linux lo va a matar y va a poner un pod identico en su lugar
+# escala no en los recursos de un solo pod sino en la cantidad de pods
+# se puede sobrevender el limite de cpu si en un momento hay mucho uso de cpu te garantizan lo que pusiste en el requests
+# si usas mas cpu que el limite el kernel no lo mata pero hacer cpu throtling, lo va a ahorcar hasta que se ajuste a esa velocidad
+
+# readinesProbe: nos sirve para configurar el criterio para decididr si el pod esta listo o no se
+# por ejemplo podriamos tener un pod en java que necesite mas timepo para levantar y no pasaria la prueba por default
+# tambien sirve para no mandar trafico de clientes a pods que no estan listos todavia
